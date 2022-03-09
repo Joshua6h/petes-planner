@@ -1,0 +1,16 @@
+[
+    {
+        "id": "0",
+        "name": "Event 1",
+        "description": "This is the first event",
+        "participants": ["Josh", "Pete"],
+        "datetime": "3/15/2022"
+    },
+    {
+        "id": "0",
+        "name": "Event 2",
+        "description": "This is the second event",
+        "participants": ["Josh", "Scooter"],
+        "datetime": "3/18/2022"
+    }
+]
