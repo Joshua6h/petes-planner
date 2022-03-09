@@ -1,7 +1,10 @@
 <template>
-  <span>
+  <v-app>
     <app-navigation></app-navigation>
-  </span>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+  </v-app>
 </template>
 
 <script>

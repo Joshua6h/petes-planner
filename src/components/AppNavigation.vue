@@ -1,21 +1,29 @@
 <template>
     <span>
-        <p class="red--text">SOmething</p>
-        <!-- <v-app-bar elevation="3" dense app>
+        <v-toolbar elevation="3">
             <v-app-bar-nav-icon class="hidden-md-and-up"></v-app-bar-nav-icon>
             <router-link to="/">
-                <v-app-bar-title>Pete's Planner</v-app-bar-title>
+                <v-app-toolbar-title >Pete's Planner</v-app-toolbar-title>
             </router-link>
+            <p :class="{'red--text':true}">Test text</p>
+            <template>
+                <v-tabs v-model="tab">
+                    <v-tab to="/">Home</v-tab>
+                    <v-tab to="/about">About</v-tab>
+                </v-tabs>
+            </template>
             <v-spacer></v-spacer>
-            <v-btn class="d-sm-none" to="/">Home</v-btn>
-            <v-btn class="hidden-sm-and-down" to="/about">About</v-btn>
-        </v-app-bar> -->
+            <v-btn plain outlined>Sign In</v-btn>
+            <v-btn icon>
+                <v-icon>mdi-account</v-icon>
+            </v-btn>
+        </v-toolbar>
     </span>
 </template>
 
 <script>
 export default {
-    name: 'AppNavigation'
+    name: 'AppNavigation',
 }
 </script>
 
