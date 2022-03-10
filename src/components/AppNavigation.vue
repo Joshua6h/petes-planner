@@ -7,7 +7,7 @@
             </router-link>
             <v-toolbar flat color="#FCEDDA">
                 <v-tabs slider-color="#EE4E34">
-                    <v-tab to="/">Home</v-tab>
+                    <v-tab to="/">Dashboard</v-tab>
                     <v-tab to="/about">About</v-tab>
                 </v-tabs>
             </v-toolbar>
