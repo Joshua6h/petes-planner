@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
+import AddEvents from '../views/AddEvents.vue'
+import Calendar from '../views/Calendar.vue'
 
 Vue.use(VueRouter)
 
@@ -18,6 +20,16 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
+  {
+    path: '/add-events',
+    name: 'Add Events',
+    component: AddEvents
+  },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    component: Calendar
+  }
 ]
 
 const router = new VueRouter({
