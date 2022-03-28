@@ -13,7 +13,8 @@
             </v-toolbar>
             <v-spacer></v-spacer>
             <v-btn plain outlined to="/login">Log In</v-btn>
-            <v-btn icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
+            <div class="mx-3">Username</div>
+            <v-btn to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>
         </v-toolbar>
