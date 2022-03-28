@@ -1,15 +1,17 @@
 <template>
     <span>
         <h1>Welcome, Name</h1>
-        <v-row>
+        <v-row class="ma-1 d-flex">
             <v-col>
                 <upcoming-events></upcoming-events>
             </v-col>
             <v-col>
                 <choose-view></choose-view>
+                <router-link to="/calendar">Go to calendar</router-link>
             </v-col>
             <v-col>
                 <add-event></add-event>
+                <router-link to="/add-events">Go to add event</router-link>
             </v-col>    
         </v-row>
     </span>
