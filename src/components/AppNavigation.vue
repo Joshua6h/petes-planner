@@ -3,7 +3,7 @@
         <v-toolbar elevation="3" color="#FCEDDA">
             <v-app-bar-nav-icon class="hidden-md-and-up"></v-app-bar-nav-icon>
             <router-link to="/">
-                <v-app-toolbar-title >Pete's Planner</v-app-toolbar-title>
+                <v-app-bar-title>Pete's Planner</v-app-bar-title>
             </router-link>
             <v-toolbar flat color="#FCEDDA">
                 <v-tabs slider-color="#EE4E34">
@@ -12,8 +12,8 @@
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
-            <v-btn plain outlined>Sign In</v-btn>
-            <v-btn icon>
+            <v-btn plain outlined to='/login'>Sign In</v-btn>
+            <v-btn icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>
         </v-toolbar>
