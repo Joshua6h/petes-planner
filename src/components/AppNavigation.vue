@@ -12,7 +12,7 @@
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
-            <v-btn plain outlined to='/login'>Sign In</v-btn>
+            <v-btn plain outlined to="/login">Log In</v-btn>
             <v-btn icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>

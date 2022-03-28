@@ -1,8 +1,8 @@
 <template>
     <span>
-        <h1 class="my-10">Login Page</h1>
+        <h1 class="my-10">Sign Up Page</h1>
         <v-container class="form">
-            <login-form @raiseError="setError($event)"></login-form>
+            <sign-up-form @raiseError="setError($event)"></sign-up-form>
             <v-container class="error my-5" v-if="error != ''">
                 <h5>{{error}}</h5>
             </v-container>
@@ -11,17 +11,17 @@
 </template>
 
 <script>
-import LoginForm from '@/components/LoginForm.vue';
+import SignUpForm from '@/components/SignUpForm.vue';
 
 export default {
-    name: 'Login',
+    name: 'SignUp',
     data() {
         return {
             error: ''
         }
     },
     components: {
-        LoginForm
+        SignUpForm
     },
     methods: {
         setError(err) {
