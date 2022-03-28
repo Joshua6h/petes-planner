@@ -5,9 +5,8 @@
         <router-link to="/reset-password">Forgot password?</router-link>
         <br>
         <v-btn type="submit" class="mt-5 mb-8">Login</v-btn>
-        <div>
-            <small>No account yet? <router-link to="/sign-up">Sign Up</router-link></small>
-        </div>
+        <br>
+        <small>No account yet? <router-link to="/sign-up">Sign Up</router-link></small>
     </v-form>
 </template>
 
