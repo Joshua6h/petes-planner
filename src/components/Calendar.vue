@@ -7,8 +7,8 @@
         <v-btn @click="setDailyView" class="ma-1">Daily View</v-btn>
         <v-spacer></v-spacer>
         <v-btn @click="prev()" icon><v-icon>mdi-chevron-left</v-icon></v-btn>
-        <v-btn @click="$refs.calendar.next()" value="2022-01-01" icon><v-icon>mdi-chevron-right</v-icon></v-btn>
-        <v-calendar :type="type" :events="events" ref="calendar"></v-calendar>
+        <v-btn @click="next()" icon><v-icon>mdi-chevron-right</v-icon></v-btn>
+        <v-calendar :type="type" :events="events" :start="start" ref="calendar"></v-calendar>
     </span>
 </template>
 
@@ -20,6 +20,7 @@ export default{
         return {
             type: "month",
             events: events,
+            start: new Date(Date.now()),
             // validMonths: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             // startDate: Date.now()
         }
@@ -35,8 +36,38 @@ export default{
             this.type = 'day';
         },
         prev(){
-            console.log(this.$refs.calendar.prev());
-            this.$refs.calendar.prev();
+            let day = this.start.getDate();
+            let month = this.start.getMonth();
+            let year = this.start.getFullYear();
+            if(this.type === "month"){
+                let myDate = new Date(year, month - 1, day);
+                this.start = myDate;
+            }
+            if(this.type === "week"){
+                let myDate = new Date(year, month, day - 7);
+                this.start = myDate;
+            }
+            if(this.type === "day"){
+                let myDate = new Date(year, month, day - 1);
+                this.start = myDate;
+            }
+        },
+        next(){
+            let day = this.start.getDate();
+            let month = this.start.getMonth();
+            let year = this.start.getFullYear();
+            if(this.type === "month"){
+                let myDate = new Date(year, month + 1, day);
+                this.start = myDate;
+            }
+            if(this.type === "week"){
+                let myDate = new Date(year, month, day + 7);
+                this.start = myDate;
+            }
+            if(this.type === "day"){
+                let myDate = new Date(year, month, day + 1);
+                this.start = myDate;
+            }
         }
     }
 }
