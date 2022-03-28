@@ -1,9 +1,14 @@
 <template>
-    <v-img src="@/assets/profilePlaceholder.png"></v-img>
+    <v-img src="@/assets/profilePlaceholder.png" @click="show"></v-img>
 </template>
 
 <script>
 export default {
-    name: 'ProfileImage'
+    name: 'ProfileImage',
+    methods: {
+        show() {
+            console.log("Image clicked");
+        }
+    }
 }
 </script>

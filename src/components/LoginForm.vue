@@ -1,7 +1,9 @@
 <template>
     <v-form @submit.prevent="login">
-        <form-text-input label="Username" @contentUpdate="updateUsername($event)"></form-text-input>
-        <form-text-input label="Password" isPassword @contentUpdate="updatePassword($event)"></form-text-input>
+        <v-text-field label="Username" autofocus outlined v-model="username"
+                :color="this.$store.state.accent" background-color="white"></v-text-field>
+        <v-text-field label="Password" type="password" outlined v-model="password"
+                :color="this.$store.state.accent" background-color="white"></v-text-field>
         <router-link to="/reset-password">Forgot password?</router-link>
         <br>
         <v-btn type="submit" class="mt-5 mb-8">Login</v-btn>
@@ -11,13 +13,9 @@
 </template>
 
 <script>
-import FormTextInput from '@/components/FormTextInput.vue';
 
 export default {
     name: 'LoginForm',
-    components: {
-        FormTextInput
-    },
     data() {
         return {
             username: '',
@@ -35,15 +33,6 @@ export default {
             else{
                 this.$emit('raiseError', 'No fields can be left empty');
             }
-        },
-        updateUsername(str) {
-            this.username = str;
-        },
-        updatePassword(str) {
-            this.password = str;
-        },
-        changeForm() {
-            this.$store.dispatch('switchForm', 'Sign In Page')
         }
     }
 }
