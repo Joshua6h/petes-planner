@@ -9,6 +9,8 @@
                 <v-tabs slider-color="#EE4E34">
                     <v-tab to="/">Dashboard</v-tab>
                     <v-tab to="/about">About</v-tab>
+                    <v-tab to="/calendar">Calendar</v-tab>
+                    <v-tab to="/add-events">Add Events</v-tab>
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
