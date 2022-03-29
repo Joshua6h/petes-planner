@@ -5,6 +5,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    primary: "#FCEDDA",
+    accent: "#EE4E34"
   },
   mutations: {
   },

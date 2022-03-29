@@ -9,11 +9,14 @@
                 <v-tabs slider-color="#EE4E34">
                     <v-tab to="/">Dashboard</v-tab>
                     <v-tab to="/about">About</v-tab>
+                    <v-tab to="/calendar">Calendar</v-tab>
+                    <v-tab to="/add-events">Add Events</v-tab>
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
             <v-btn plain outlined to="/login">Log In</v-btn>
-            <v-btn icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
+            <div class="mx-3">Username</div>
+            <v-btn to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>
         </v-toolbar>

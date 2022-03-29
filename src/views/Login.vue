@@ -1,7 +1,7 @@
 <template>
     <span>
         <h1 class="my-10">Login Page</h1>
-        <v-container class="form">
+        <v-container class="form pb-5">
             <login-form @raiseError="setError($event)"></login-form>
             <v-container class="error my-5" v-if="error != ''">
                 <h5>{{error}}</h5>

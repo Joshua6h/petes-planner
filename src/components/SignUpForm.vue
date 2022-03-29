@@ -1,15 +1,16 @@
 <template>
     <v-form @submit.prevent="signUp">
-        <form-text-input label="Username" @contentUpdate="setUsername($event)"></form-text-input>
-        <form-text-input label="Password" isPassword @contentUpdate="setPassword($event)"></form-text-input>
-        <form-text-input label="Re-enter Password" isPassword @contentUpdate="setSecondPassword($event)"></form-text-input>
+        <v-text-field label="Username" autofocus outlined v-model="username"
+                :color="this.$store.state.accent" background-color="white"></v-text-field>
+        <v-text-field label="Password" outlined type="password" v-model="password"
+                :color="this.$store.state.accent" background-color="white"></v-text-field>
+        <v-text-field label="Re-enter Password" outlined type="password" v-model="secondPassword"
+                :color="this.$store.state.accent" background-color="white"></v-text-field>
         <v-btn type="submit">Sign Up</v-btn>
     </v-form>
 </template>
 
 <script>
-import FormTextInput from '@/components/FormTextInput.vue';
-
 export default {
     name: 'SignUpForm',
     data() {
@@ -18,9 +19,6 @@ export default {
             password: '',
             secondPassword: ''
         }
-    },
-    components: {
-        FormTextInput
     },
     methods: {
         signUp() {
@@ -39,15 +37,6 @@ export default {
             else{
                 this.$emit('raiseError', 'No fields can be left empty');
             }
-        },
-        setUsername(str) {
-            this.username = str;
-        },
-        setPassword(str) {
-            this.password = str;
-        },
-        setSecondPassword(str) {
-            this.secondPassword = str;
         }
     }
 }
