@@ -9,6 +9,8 @@
         <v-text-field label="Re-enter Password" outlined type="password" v-model="secondPassword"
                 :color="this.$store.state.accent" background-color="white"></v-text-field>
         <v-btn type="submit">Sign Up</v-btn>
+        <br class="my-5">
+        <v-btn small to="/login">Back to login</v-btn>
     </v-form>
 </template>
 
