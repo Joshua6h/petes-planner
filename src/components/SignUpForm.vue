@@ -2,6 +2,8 @@
     <v-form @submit.prevent="signUp">
         <v-text-field label="Username" autofocus outlined v-model="username"
                 :color="this.$store.state.accent" background-color="white"></v-text-field>
+        <v-text-field label="Email" outlined type="email" v-model="email"
+                :color="this.$store.state.accent" background-color="white"></v-text-field>
         <v-text-field label="Password" outlined type="password" v-model="password"
                 :color="this.$store.state.accent" background-color="white"></v-text-field>
         <v-text-field label="Re-enter Password" outlined type="password" v-model="secondPassword"
@@ -16,6 +18,7 @@ export default {
     data() {
         return {
             username: '',
+            email: '',
             password: '',
             secondPassword: ''
         }
