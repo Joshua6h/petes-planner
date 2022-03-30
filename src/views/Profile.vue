@@ -2,8 +2,7 @@
     <div>
         <v-row fluid>
             <v-col md="5" class="left-side">
-                <v-btn>Friends</v-btn>
-                <v-btn>Events</v-btn>
+                <profile-menu></profile-menu>
             </v-col>
             <v-col md="2"><profile-image></profile-image></v-col>
             <v-col></v-col>
@@ -11,10 +10,11 @@
         <v-row>
             <v-col md="12">
                 <v-container>
-                    <h2>Username <v-btn icon><v-icon>mdi-border-color</v-icon></v-btn></h2>
-                    <h2>Example.email@go.here</h2>
+                    <h2>Username</h2>
+                    <h2>First Last</h2>
+                    <h2 class="mb-5">Example.email@go.here</h2>
+                    <h3><v-btn icon><v-icon>mdi-border-color</v-icon></v-btn> Edit Information</h3>
                 </v-container>
-                <v-btn depressed class="mt-10">Logout</v-btn>
             </v-col>
         </v-row>
     </div>
@@ -22,11 +22,13 @@
 
 <script>
 import ProfileImage from '@/components/ProfileImage.vue';
+import ProfileMenu from '@/components/ProfileMenu.vue';
 
 export default {
     name: 'Profile',
     components: {
-        ProfileImage
+        ProfileImage,
+        ProfileMenu
     }
 }
 </script>
