@@ -26,6 +26,11 @@
 <script>
 export default {
     name: 'AppNavigation',
+    computed: {
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated;
+    }
+  }
 }
 </script>
 
