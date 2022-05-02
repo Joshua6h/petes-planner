@@ -19,7 +19,7 @@ var server = "DESKTOP-0C0FDTP"
 var port = 1433
 var user = "apiuser"
 var password = "Api2022!"
-var database = "WebStuff"
+var database = "petes_planner"
 
 func main() {
 	// Establish db connection
@@ -53,7 +53,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u model.User
+	var u model.JsonLoginRequest
 	err = json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -61,7 +61,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for valid login
-	tsql := fmt.Sprintf("SELECT UserId FROM Users WHERE Email='%s' AND Password='%s';", u.Email, u.Password)
+	// tsql := fmt.Sprintf("SELECT user_id FROM users WHERE username='%s' AND password='%s';", u.Username, u.Password)
+	tsql := "SELECT user_id FROM users WHERE username='josh6h' AND password='5ecretPassword';"
 	row := db.QueryRowContext(ctx, tsql)
 	var uid int
 	if err = row.Scan(&uid); err != nil {

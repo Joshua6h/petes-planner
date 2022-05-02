@@ -29,6 +29,11 @@ type JsonGenericResponse struct {
 	Message string `json:"message"`
 }
 
+type JsonLoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type JsonLoginResponse struct {
 	Type     string `json:"type"`
 	Message  string `json:"message"`
