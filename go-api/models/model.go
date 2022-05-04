@@ -23,3 +23,26 @@ type Friendship struct {
 	UserID        int32 `json:"user_id"`
 	FriendsWithID int32 `json:"friends_with_id"`
 }
+
+type JsonGenericResponse struct {
+	Type    string `json:"type"`
+	Message string `json:"message"`
+}
+
+type JsonLoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type JsonLoginResponse struct {
+	Type     string `json:"type"`
+	Message  string `json:"message"`
+	UserGuid string `json:"userguid"`
+}
+
+type Session struct {
+	SessionId int    `json:"sessionid"`
+	UserId    int    `json:"userid"`
+	UserGuid  string `json:"userguid"`
+	IsActive  bool   `json:"isactive"`
+}
