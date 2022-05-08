@@ -37,7 +37,6 @@ func main() {
 	router.HandleFunc("/logout", Logout).Methods(http.MethodPost)
 	router.HandleFunc("/getevents", GetEvents).Methods(http.MethodPost)
 	router.HandleFunc("/addevent", AddEvent).Methods(http.MethodPost)
-	router.HandleFunc("/createuser", CreateUser).Methods(http.MethodPost)
 	router.HandleFunc("/getfriends", GetFriends).Methods(http.MethodPost)
 	router.HandleFunc("/addfriend", AddFriend).Methods(http.MethodPost)
 
