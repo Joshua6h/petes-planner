@@ -15,8 +15,11 @@ import (
 )
 
 var db *sql.DB
-var server = "DESKTOP-0C0FDTP"
-var port = 1433
+
+//var server = "DESKTOP-0C0FDTP" // Josh
+var server = "localhost" // Peter
+//var port = 1433 // Josh
+var port = 49678 // Peter
 var user = "apiuser"
 var password = "Api2022!"
 var database = "petes_planner"
@@ -33,8 +36,9 @@ func main() {
 	// Handle api requests
 	router := mux.NewRouter()
 
-	router.HandleFunc("/login", Login).Methods(http.MethodPost)
-	router.HandleFunc("/logout", Logout).Methods(http.MethodPost)
+	router.HandleFunc("/login", Login).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/logout", mwCheck(Logout)).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/getprofile", mwCheck(GetProfile)).Methods(http.MethodPost, http.MethodOptions)
 
 	srv := &http.Server{
 		Addr:    ":8000",
@@ -43,6 +47,39 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)
 	}
+}
+
+func mwCheck(f func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !validateUser(r) {
+			http.Error(w, "Unauthorized", http.StatusForbidden)
+		} else {
+			f(w, r)
+		}
+	}
+}
+
+func validateUser(r *http.Request) bool {
+	ctx := context.Background()
+	err := db.PingContext(ctx)
+	if err != nil {
+		return false
+	}
+	ug := r.Header.Get("Authorization")
+	if ug == "" {
+		return false
+	}
+
+	tsql := fmt.Sprintf("SELECT SessionId FROM Sessions WHERE UserGuid='%s' AND IsActive=1;", ug)
+	row := db.QueryRowContext(ctx, tsql)
+	if err != nil {
+		return false
+	}
+	var sid int
+	if err = row.Scan(&sid); err != nil {
+		return false
+	}
+	return true
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -61,12 +98,24 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for valid login
-	// tsql := fmt.Sprintf("SELECT user_id FROM users WHERE username='%s' AND password='%s';", u.Username, u.Password)
-	tsql := "SELECT user_id FROM users WHERE username='josh6h' AND password='5ecretPassword';"
+	tsql := fmt.Sprintf("SELECT user_id FROM users WHERE username='%s' AND password='%s';", u.Username, u.Password)
+	// tsql := "SELECT user_id FROM users WHERE username='josh6h' AND password='5ecretPassword';"
 	row := db.QueryRowContext(ctx, tsql)
 	var uid int
 	if err = row.Scan(&uid); err != nil {
-		http.Error(w, "No login found", http.StatusUnauthorized)
+		http.Error(w, "Incorrect login information", http.StatusUnauthorized)
+		return
+	}
+
+	tsql = fmt.Sprintf("SELECT SessionId FROM Sessions WHERE UserId=%d AND IsActive=1;", uid)
+	row = db.QueryRowContext(ctx, tsql)
+	var sid int
+	if err = row.Scan(&sid); err != nil && err != sql.ErrNoRows {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if sid != 0 {
+		http.Error(w, "You are already logged on", http.StatusUnauthorized)
 		return
 	}
 
@@ -85,11 +134,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
+
 	w.WriteHeader(http.StatusOK)
 	resp := model.JsonLoginResponse{Message: "Logged In", Type: "Success", UserGuid: guid.String()}
 	err = json.NewEncoder(w).Encode(resp)
-
-	err = json.NewEncoder(w).Encode("(:")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -104,18 +155,9 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var s model.Session
-	err = json.NewDecoder(r.Body).Decode(&s)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if s.UserGuid == "" {
-		http.Error(w, "No userguid provided", http.StatusBadRequest)
-		return
-	}
+	ug := r.Header.Get("Authorization")
 
-	tsql := fmt.Sprintf("UPDATE Sessions SET IsActive=0 WHERE UserGuid='%s'", s.UserGuid)
+	tsql := fmt.Sprintf("UPDATE Sessions SET IsActive=0 WHERE UserGuid='%s'", ug)
 	res, err := db.ExecContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -136,4 +178,40 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func GetProfile(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	err := db.PingContext(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ug := r.Header.Get("Authorization")
+
+	tsql := fmt.Sprintf(`SELECT u.username, u.first_name, u.last_name, u.email
+						FROM users u
+						INNER JOIN Sessions s
+						ON u.user_id=s.UserId
+						WHERE s.UserGuid='%s';`, ug)
+	row := db.QueryRowContext(ctx, tsql)
+	var p model.Profile
+	if err = row.Scan(&p.Username, &p.FirstName, &p.LastName, &p.Email); err != nil {
+		http.Error(w, "Cannot find profile", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
+
+	w.WriteHeader(http.StatusOK)
+	resp := model.JsonProfileResponse{Type: "Success", Data: p}
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
