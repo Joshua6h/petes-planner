@@ -10,11 +10,13 @@ export default new Vuex.Store({
     accent: "#EE4E34",
     token: localStorage.getItem('user-token') || '',
     status: '',
-    profile: {}
+    profile: {},
+    profileStatus: ''
   },
   getters: {
     isAuthenticated: state => !!state.token,
     authStatus: state => state.status,
+    hasProfile: state => state.profileStatus == 'success',
     username: state => state.profile['username'],
     firstname: state => state.profile['firstname'],
     lastname: state => state.profile['lastname'],
@@ -31,8 +33,16 @@ export default new Vuex.Store({
     AUTH_ERROR: (state) => {
       state.status = 'error'
     },
-    SET_PROFILE: (state, data) => {
-      state.profile = data
+    PROFILE_REQUEST: (state) => {
+      state.profileStatus = 'loading'
+    },
+    PROFILE_SUCCESS: (state, profile) => {
+      state.profile = profile
+      state.profileStatus = 'success'
+    },
+    PROFILE_ERROR: (state) => {
+      state.profile = {}
+      state.profileStatus = 'error'
     }
   },
   actions: {
@@ -62,6 +72,7 @@ export default new Vuex.Store({
         .then(resp => {
           localStorage.removeItem('user-token');
           axios.defaults.headers.common['Authorization'] = "";
+          commit('PROFILE_ERROR', {});
           commit('AUTH_SUCCESS', "");
           resolve(resp);
         })
@@ -71,16 +82,17 @@ export default new Vuex.Store({
         })
       })
     },
-    GET_PROFILE: ({commit, state}) => {
+    GET_PROFILE: ({commit}) => {
       return new Promise((resolve, reject) => {
-        axios.defaults.headers.common['Authorization'] = state.token;
+        commit('PROFILE_REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
         axios({url: 'http://localhost:8080/getprofile', data: {}, method: 'POST'})
         .then(resp => {
-          commit('SET_PROFILE', resp.data.data);
+          commit('PROFILE_SUCCESS', resp.data.data);
           resolve(resp);
         })
         .catch(err => {
-          commit('SET_PROFILE', {});
+          commit('PROFILE_ERROR');
           reject(err);
         })
       })

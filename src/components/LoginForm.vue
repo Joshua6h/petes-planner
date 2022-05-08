@@ -43,6 +43,9 @@ export default {
                     this.$emit('raiseError', err.response.data);
                 }
             })
+            .finally(() => {
+                this.$store.dispatch('GET_PROFILE');
+            })
         }
     }
 }

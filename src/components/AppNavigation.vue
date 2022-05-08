@@ -7,15 +7,15 @@
             </router-link>
             <v-toolbar flat color="#FCEDDA">
                 <v-tabs slider-color="#EE4E34">
-                    <v-tab to="/about">About</v-tab>
-                    <v-tab v-if='isAuthenticated' to="/">Dashboard</v-tab>
+                    <v-tab to="/">About</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/dashboard">Dashboard</v-tab>
                     <v-tab v-if='isAuthenticated' to="/calendar">Calendar</v-tab>
                     <v-tab v-if='isAuthenticated' to="/add-events">Add Events</v-tab>
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
             <v-btn v-if='!isAuthenticated' plain outlined to="/login">Log In</v-btn>
-            <div v-if='isAuthenticated' class="mx-3">{{getUsername}}</div>
+            <div v-if='isAuthenticated && hasProfile' class="mx-3">{{getUsername}}</div>
             <v-btn v-if='isAuthenticated' to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>
@@ -33,17 +33,18 @@ export default {
         isAuthenticated() {
             return this.$store.getters.isAuthenticated;
         },
+        hasProfile() {
+            return this.$store.getters.hasProfile;
+        },
         getUsername() {
             return this.$store.getters.username;
         }
     },
-    methods: {
-        getProfile() {
+    created() {
+        let status = this.$store.getters.hasProfile;
+        if (status == '') {
             this.$store.dispatch('GET_PROFILE');
         }
-    },
-    beforeMount() {
-        this.getProfile();
     }
 }
 </script>
