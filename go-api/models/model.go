@@ -40,9 +40,22 @@ type JsonLoginResponse struct {
 	UserGuid string `json:"userguid"`
 }
 
+type JsonAddUserRequest struct {
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+}
+
 type JsonProfileResponse struct {
-	Type string  `json:"type"`
-	Data Profile `json:"data"`
+	Type    string  `json:"type"`
+	Message string  `json:"message"`
+	Data    Profile `json:"data"`
+}
+
+type JsonEmailRequest struct {
+	Email string `json:"email"`
 }
 
 type Profile struct {

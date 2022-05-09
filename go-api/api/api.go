@@ -12,6 +12,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	gomail "gopkg.in/gomail.v2"
 )
 
 var db *sql.DB
@@ -39,6 +40,8 @@ func main() {
 	router.HandleFunc("/login", Login).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/logout", mwCheck(Logout)).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/getprofile", mwCheck(GetProfile)).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/adduser", AddUser).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/sendemail", SendMessage).Methods(http.MethodPost, http.MethodOptions)
 
 	srv := &http.Server{
 		Addr:    ":8000",
@@ -177,7 +180,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 }
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -208,7 +210,91 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
 
 	w.WriteHeader(http.StatusOK)
-	resp := model.JsonProfileResponse{Type: "Success", Data: p}
+	resp := model.JsonProfileResponse{Type: "Success", Message: "Retrieved profile data", Data: p}
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func AddUser(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	err := db.PingContext(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var u model.JsonAddUserRequest
+	err = json.NewDecoder(r.Body).Decode(&u)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tsql := fmt.Sprintf("INSERT INTO users VALUES ('%s', '%s', '%s', '%s', '%s');", u.Username, u.Password, u.Email, u.FirstName, u.LastName)
+	res, err := db.ExecContext(ctx, tsql)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	count, err := res.RowsAffected()
+	if err != nil || count != 1 {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := model.JsonGenericResponse{Message: "User created", Type: "Success"}
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func SendMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	err := db.PingContext(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var e model.JsonEmailRequest
+	err = json.NewDecoder(r.Body).Decode(&e)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tsql := fmt.Sprintf("SELECT password FROM users WHERE email='%s';", e.Email)
+	row := db.QueryRowContext(ctx, tsql)
+	var pass string
+	if err = row.Scan(&pass); err != nil {
+		http.Error(w, "Password not found", http.StatusInternalServerError)
+		return
+	}
+
+	msg := gomail.NewMessage()
+	msg.SetHeader("From", "cooltestemail23@gmail.com")
+	msg.SetHeader("To", e.Email)
+	msg.SetHeader("Subject", "Pete's Planner Password")
+	msg.SetBody("text/html", fmt.Sprintf("<b>Here is your password</b><div>%s</div>", pass))
+	//msg.Attach("/home/User/cat.jpg")
+
+	n := gomail.NewDialer("smtp.gmail.com", 587, "cooltestemail23@gmail.com", "PassTest1!")
+
+	// Send the email
+	err = n.DialAndSend(msg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	resp := model.JsonGenericResponse{Message: "Email Sent", Type: "Success"}
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

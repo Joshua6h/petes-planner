@@ -42,8 +42,12 @@ export default {
     },
     created() {
         let status = this.$store.getters.hasProfile;
-        if (status == '') {
-            this.$store.dispatch('GET_PROFILE');
+        let authenticated = this.$store.getters.isAuthenticated;
+        if (authenticated && status == '') {
+            this.$store.dispatch('GET_PROFILE')
+            .catch(() => {
+                return;
+            });
         }
     }
 }

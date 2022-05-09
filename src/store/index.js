@@ -43,6 +43,15 @@ export default new Vuex.Store({
     PROFILE_ERROR: (state) => {
       state.profile = {}
       state.profileStatus = 'error'
+    },
+    REQUEST: (state) => {
+      state.status = 'requesting'
+    },
+    SUCCESS: (state) => {
+      state.status = 'success'
+    },
+    ERROR: (state) => {
+      state.status = 'error'
     }
   },
   actions: {
@@ -93,6 +102,36 @@ export default new Vuex.Store({
         })
         .catch(err => {
           commit('PROFILE_ERROR');
+          reject(err);
+        })
+      })
+    },
+    CREATE_USER: ({commit}, userInfo) => {
+      return new Promise((resolve, reject) => {
+        commit('REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/adduser', data: userInfo, method: 'POST'})
+        .then(resp => {
+          commit('SUCCESS');
+          resolve(resp);
+        })
+        .catch(err => {
+          commit('ERROR');
+          reject(err);
+        })
+      })
+    },
+    SEND_EMAIL: ({commit}, email) => {
+      return new Promise((resolve, reject) => {
+        commit('REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/sendemail', data: email, method: 'POST'})
+        .then(resp => {
+          commit('SUCCESS');
+          resolve(resp);
+        })
+        .catch(err => {
+          commit('ERROR');
           reject(err);
         })
       })
