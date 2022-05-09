@@ -7,16 +7,19 @@
             </router-link>
             <v-toolbar flat color="#FCEDDA">
                 <v-tabs slider-color="#EE4E34">
-                    <v-tab to="/">Dashboard</v-tab>
-                    <v-tab to="/about">About</v-tab>
-                    <v-tab to="/calendar">Calendar</v-tab>
-                    <v-tab to="/add-events">Add Events</v-tab>
+                    <v-tab to="/">About</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/dashboard">Dashboard</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/calendar">Calendar</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/add-events">Add Events</v-tab>
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
-            <v-btn plain outlined to="/login">Log In</v-btn>
-            <div class="mx-3">Username</div>
-            <v-btn to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
+            <v-btn v-if='!isAuthenticated' plain outlined to="/login">Log In</v-btn>
+            <div v-if='isAuthenticated && hasProfile' class="mx-3">{{getUsername}}</div>
+            <v-btn v-if='isAuthenticated' to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
+                <v-icon>mdi-account-circle</v-icon>
+            </v-btn>
+            <v-btn v-if='!isAuthenticated' icon>
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>
         </v-toolbar>
@@ -26,6 +29,27 @@
 <script>
 export default {
     name: 'AppNavigation',
+    computed: {
+        isAuthenticated() {
+            return this.$store.getters.isAuthenticated;
+        },
+        hasProfile() {
+            return this.$store.getters.hasProfile;
+        },
+        getUsername() {
+            return this.$store.getters.username;
+        }
+    },
+    created() {
+        let status = this.$store.getters.hasProfile;
+        let authenticated = this.$store.getters.isAuthenticated;
+        if (authenticated && status == '') {
+            this.$store.dispatch('GET_PROFILE')
+            .catch(() => {
+                return;
+            });
+        }
+    }
 }
 </script>
 

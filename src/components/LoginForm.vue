@@ -24,15 +24,28 @@ export default {
         }
     },
     methods: {
-        login() {
+        login: function() {
             console.log('Login button was pressed'); //These are not staying like this, obviously
             if(this.username && this.password){
-                console.log(`${this.username} ${this.password}`);
                 this.$emit('raiseError', '');
             }
             else{
                 this.$emit('raiseError', 'No fields can be left empty');
+                return;
             }
+            
+            const info = {username: this.username, password: this.password};
+            this.$store.dispatch('AUTH_REQUEST', info).then(() => {
+                this.$router.push('/');
+            }).catch((err) => {
+                if (err.response) {
+                    // Request made and server responded
+                    this.$emit('raiseError', err.response.data);
+                }
+            })
+            .finally(() => {
+                this.$store.dispatch('GET_PROFILE');
+            })
         }
     }
 }
