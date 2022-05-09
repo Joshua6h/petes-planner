@@ -1,0 +1,6 @@
+CREATE TABLE Sessions (
+ SessionId INT IDENTITY(1,1) PRIMARY KEY,
+ UserId INT FOREIGN KEY REFERENCES users(user_id),
+ UserGuid VARCHAR(100),
+ IsActive BIT
+)INSERT INTO usersVALUES ('josh6h', '5ecretPassword', 'joshuahennen@fake-email.com', 'Joshua', 'Hennen'),('ColoradoMJP', 'PetesPassword', 'mjpete@notanemail.com', 'Peter', 'Vanderhyde'),('ScooterBoi', 'peanutbutter', 'scooter@dogmail.com', 'Scooter', 'Hennen'),('CharliePitbull', 'woof', 'charlie@pitbulls.com', 'Charlie', 'Hennen')INSERT INTO friendsVALUES (1, 2),(2, 1),(1, 3),(3, 1),(1, 4),(4, 1),(2, 3),(3, 2),(2, 4),(4, 2),(3, 4),(4, 3)INSERT INTO events (title, description, start_datetime, end_datetime)VALUES ('Backend Checkpoint', 'Have back end code prepared for class', '2022-05-05 12:30:00', '2022-05-05 1:20:00'),('Play with dogs', 'Fetch with Charlie and chase Scooter', '2022-05-09 11:00:00', '2022-05-09 02:30:00'),('Work', 'Do all kinds of fun insurance things', '2022-05-12 02:30:00', '2022-05-12 05:30:00')INSERT INTO user_eventsVALUES(1, 2),(1, 3),(1, 4),(1, 2),(3, 3),(4, 3)INSERT INTO Sessions(UserId, IsActive)VALUES (1, 1)
