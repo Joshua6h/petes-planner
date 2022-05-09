@@ -1,16 +1,31 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dashboard from '../views/Dashboard.vue'
-import AddEvents from '../views/AddEvents.vue'
-import Calendar from '../views/Calendar.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
+
+const ifAuthenticated = (to, from, next) => {
+  if(store.getters.isAuthenticated) {
+    next();
+    return;
+  }
+  next('/login');
+}
+
+const ifNotAuthenticated = (to, from, next) => {
+  if(!store.getters.isAuthenticated) {
+    next();
+    return;
+  }
+  next('/');
+}
 
 const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: Dashboard
+    component: () => import('@/views/Dashboard.vue'),
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/about',
@@ -23,32 +38,38 @@ const routes = [
   {
     path: '/add-events',
     name: 'Add Events',
-    component: AddEvents
+    component: () => import('@/views/AddEvents.vue'),
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/calendar',
     name: 'Calendar',
-    component: Calendar
+    component: () => import('@/views/Calendar.vue'),
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login.vue')
+    component: () => import('@/views/Login.vue'),
+    beforeEnter: ifNotAuthenticated
   },
   {
     path: '/sign-up',
     name: 'SignUp',
-    component: () => import('@/views/SignUp.vue')
+    component: () => import('@/views/SignUp.vue'),
+    beforeEnter: ifNotAuthenticated
   },
   {
     path: '/reset-password',
     name: 'ResetPassword',
-    component: () => import('@/views/ResetPassword.vue')
+    component: () => import('@/views/ResetPassword.vue'),
+    beforeEnter: ifNotAuthenticated
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('@/views/Profile.vue')
+    component: () => import('@/views/Profile.vue'),
+    beforeEnter: ifAuthenticated
   }
 ]
 

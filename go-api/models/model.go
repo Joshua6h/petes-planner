@@ -45,6 +45,18 @@ type JsonLoginResponse struct {
 	UserGuid string `json:"userguid"`
 }
 
+type JsonProfileResponse struct {
+	Type string  `json:"type"`
+	Data Profile `json:"data"`
+}
+
+type Profile struct {
+	Username  string `json:"username"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+}
+
 type Session struct {
 	SessionId int    `json:"sessionid"`
 	UserId    int    `json:"userid"`

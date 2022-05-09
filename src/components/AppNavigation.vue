@@ -7,16 +7,19 @@
             </router-link>
             <v-toolbar flat color="#FCEDDA">
                 <v-tabs slider-color="#EE4E34">
-                    <v-tab to="/">Dashboard</v-tab>
                     <v-tab to="/about">About</v-tab>
-                    <v-tab to="/calendar">Calendar</v-tab>
-                    <v-tab to="/add-events">Add Events</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/">Dashboard</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/calendar">Calendar</v-tab>
+                    <v-tab v-if='isAuthenticated' to="/add-events">Add Events</v-tab>
                 </v-tabs>
             </v-toolbar>
             <v-spacer></v-spacer>
-            <v-btn plain outlined to="/login">Log In</v-btn>
-            <div class="mx-3">Username</div>
-            <v-btn to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
+            <v-btn v-if='!isAuthenticated' plain outlined to="/login">Log In</v-btn>
+            <div v-if='isAuthenticated' class="mx-3">{{getUsername}}</div>
+            <v-btn v-if='isAuthenticated' to="/profile" icon> <!-- Make the sign in and account buttons alternate visibility based on authentication -->
+                <v-icon>mdi-account-circle</v-icon>
+            </v-btn>
+            <v-btn v-if='!isAuthenticated' icon>
                 <v-icon>mdi-account-circle</v-icon>
             </v-btn>
         </v-toolbar>
@@ -26,6 +29,22 @@
 <script>
 export default {
     name: 'AppNavigation',
+    computed: {
+        isAuthenticated() {
+            return this.$store.getters.isAuthenticated;
+        },
+        getUsername() {
+            return this.$store.getters.username;
+        }
+    },
+    methods: {
+        getProfile() {
+            this.$store.dispatch('GET_PROFILE');
+        }
+    },
+    beforeMount() {
+        this.getProfile();
+    }
 }
 </script>
 
