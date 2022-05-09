@@ -18,6 +18,11 @@ type Event struct {
 	GroupID       string `json:"group_id"`
 }
 
+type NewEventRequest struct {
+	NewEvent Event `json:"event"`
+	Users    []int `json:"users"`
+}
+
 type Friendship struct {
 	FriendID      int32 `json:"friend_id"`
 	UserID        int32 `json:"user_id"`
