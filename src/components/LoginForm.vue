@@ -25,7 +25,6 @@ export default {
     },
     methods: {
         login: function() {
-            console.log('Login button was pressed'); //These are not staying like this, obviously
             if(this.username && this.password){
                 this.$emit('raiseError', '');
             }
