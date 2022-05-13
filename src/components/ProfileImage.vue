@@ -1,5 +1,5 @@
 <template>
-    <v-img src="@/assets/profilePlaceholder.png" @click="show"></v-img>
+    <v-img src="@/assets/profilePlaceholder.png" max-width="20vw" @click="show"></v-img>
 </template>
 
 <script>
