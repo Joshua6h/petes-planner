@@ -208,7 +208,7 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	}
 	// print(uid)
 	defer rows.Close()
-	tsql = fmt.Sprintf("SELECT events.description, events.title, events.start_datetime, events.end_datetime FROM user_events INNER JOIN events ON user_events.event_id = events.event_id WHERE user_events.user_id=%d", uid)
+	tsql = fmt.Sprintf("SELECT events.event_id, events.title, events.description, events.start_datetime, events.end_datetime FROM user_events INNER JOIN events ON user_events.event_id = events.event_id WHERE user_events.user_id=%d", uid)
 	rows, err = db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -219,8 +219,25 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	var event_list []model.Event
 	for rows.Next() {
 		var event model.Event
-		rows.Scan(&event.Title, &event.Description, &event.StartDateTime, &event.EndDateTime)
+		rows.Scan(&event.EventID, &event.Title, &event.Description, &event.StartDateTime, &event.EndDateTime)
 		event_list = append(event_list, event)
+	}
+
+	for event := range event_list {
+		tsql = fmt.Sprintf("SELECT users.first_name, users.last_name FROM user_events INNER JOIN users ON user_events.user_id = users.user_id where user_events.event_id = %d", event_list[event].EventID)
+		rows, err = db.QueryContext(ctx, tsql)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var first_name string
+			var last_name string
+			rows.Scan(&first_name, &last_name)
+			name := first_name + " " + last_name
+			event_list[event].Friends = append(event_list[event].Friends, name)
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

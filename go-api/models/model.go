@@ -10,12 +10,13 @@ type User struct {
 }
 
 type Event struct {
-	EventID       int32  `json:"event_id"`
-	Title         string `json:"title"`
-	Description   string `json:"description"`
-	StartDateTime string `json:"start_datetime"`
-	EndDateTime   string `json:"end_datetime"`
-	GroupID       string `json:"group_id"`
+	EventID       int32    `json:"event_id"`
+	Title         string   `json:"title"`
+	Description   string   `json:"description"`
+	StartDateTime string   `json:"start_datetime"`
+	EndDateTime   string   `json:"end_datetime"`
+	GroupID       string   `json:"group_id"`
+	Friends       []string `json:"friends"`
 }
 
 type NewEventRequest struct {

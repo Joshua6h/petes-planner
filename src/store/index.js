@@ -11,7 +11,9 @@ export default new Vuex.Store({
     token: localStorage.getItem('user-token') || '',
     status: '',
     profile: {},
-    profileStatus: ''
+    profileStatus: '',
+    events: [],
+    eventsStatus: ''
   },
   getters: {
     isAuthenticated: state => !!state.token,
@@ -20,7 +22,8 @@ export default new Vuex.Store({
     username: state => state.profile['username'],
     firstname: state => state.profile['firstname'],
     lastname: state => state.profile['lastname'],
-    email: state => state.profile['email']
+    email: state => state.profile['email'],
+    events: state => state.events
   },
   mutations: {
     AUTH_REQUEST: (state) => {
@@ -52,6 +55,18 @@ export default new Vuex.Store({
     },
     ERROR: (state) => {
       state.status = 'error'
+    },
+    GET_EVENTS_REQUEST: (state) => {
+      state.status = 'loading'
+    },
+    GET_EVENTS_SUCCESS: (state, events) => {
+      state.eventsStatus = 'success'
+      state.events = events
+      console.log(events)
+    },
+    GET_EVENTS_ERROR: (state) => {
+      state.status = 'error'
+      state.profile = {}
     }
   },
   actions: {
@@ -135,8 +150,24 @@ export default new Vuex.Store({
           reject(err);
         })
       })
-    }
+    },
+    GET_EVENTS: ({commit}) => {
+      return new Promise((resolve, reject) => {
+        commit('GET_EVENTS_REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/getevents', data: {}, method: 'POST'})
+        .then(resp => {
+          commit('GET_EVENTS_SUCCESS', resp.data);
+          resolve(resp);
+        })
+        .catch(err => {
+          commit('GET_EVENTS_ERROR');
+          reject(err);
+        })
+      })
+    },
   },
+  
   modules: {
   }
 })
