@@ -19,8 +19,8 @@ var db *sql.DB
 
 //var server = "DESKTOP-0C0FDTP" // Josh
 var server = "localhost" // Peter
-// var port = 1433          // Josh
-var port = 49678 // Peter
+var port = 1433          // Josh
+// var port = 49678 // Peter
 var user = "apiuser"
 var password = "Api2022!"
 var database = "petes_planner"
@@ -206,7 +206,6 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No login found", http.StatusUnauthorized)
 		return
 	}
-	// print(uid)
 	defer rows.Close()
 	tsql = fmt.Sprintf("SELECT events.event_id, events.title, events.description, events.start_datetime, events.end_datetime FROM user_events INNER JOIN events ON user_events.event_id = events.event_id WHERE user_events.user_id=%d", uid)
 	rows, err = db.QueryContext(ctx, tsql)
@@ -442,16 +441,29 @@ func GetFriends(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	var u model.User
-	err = json.NewDecoder(r.Body).Decode(&u)
+	ug := r.Header.Get("Authorization")
+	tsql := fmt.Sprintf("SELECT UserId FROM Sessions where UserGuid='%s' AND IsActive=1;", ug)
+	rows, err := db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	row := db.QueryRowContext(ctx, tsql)
+	var uid int
+	if err = row.Scan(&uid); err != nil {
+		http.Error(w, "No login found", http.StatusUnauthorized)
+		return
+	}
+	defer rows.Close()
 
-	tsql := fmt.Sprintf("SELECT users.user_id, users.first_name, users.last_name, users.username FROM users INNER JOIN friends ON users.user_id = friends.friends_with_id WHERE friends.user_id = %d", u.UserID)
-	rows, err := db.QueryContext(ctx, tsql)
+	// var u model.User
+	// err = json.NewDecoder(r.Body).Decode(&u)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	tsql = fmt.Sprintf("SELECT users.user_id, users.first_name, users.last_name, users.username FROM users INNER JOIN friends ON users.user_id = friends.friends_with_id WHERE friends.user_id = %d", uid)
+	rows, err = db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

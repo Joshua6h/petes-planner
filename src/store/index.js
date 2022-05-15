@@ -14,7 +14,9 @@ export default new Vuex.Store({
     profileStatus: '',
     events: [],
     eventsStatus: '',
-    addEventsStatus: ''
+    addEventsStatus: '',
+    friends: [],
+    getFriendsStatus: ''
   },
   getters: {
     isAuthenticated: state => !!state.token,
@@ -24,7 +26,8 @@ export default new Vuex.Store({
     firstname: state => state.profile['firstname'],
     lastname: state => state.profile['lastname'],
     email: state => state.profile['email'],
-    events: state => state.events
+    events: state => state.events,
+    friends: state => state.friends
   },
   mutations: {
     AUTH_REQUEST: (state) => {
@@ -76,6 +79,16 @@ export default new Vuex.Store({
     },
     ADD_EVENTS_FAILURE: (state) => {
       state.addEventsStatus = 'failure'
+    },
+    GET_FRIENDS_REQUEST: (state) => {
+      state.getFriendsStatus = 'loading'
+    },
+    GET_FRIENDS_SUCCESS: (state, friends) => {
+      state.getFriendsStatus = 'success'
+      state.friends = friends
+    },
+    GET_FRIENDS_FAILURE: (state) => {
+      state.getFriendsStatus = 'success'
     }
   },
   actions: {
@@ -181,12 +194,27 @@ export default new Vuex.Store({
         axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
         axios({url: 'http://localhost:8080/getevents', data: event, method: 'POST'})
         .then(resp => {
-          commit('ADD_EVENTS_SUCCESS', resp.data);
+          commit('ADD_EVENTS_SUCCESS');
           resolve(resp);
           this.$store.dispatch('GET_EVENTS');
         })
         .catch(err => {
           commit('ADD_EVENTS_ERROR');
+          reject(err);
+        })
+      })
+    },
+    GET_FRIENDS: ({commit}) => {
+      return new Promise((resolve, reject) => {
+        commit('GET_FRIENDS_REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/getfriends', data: {}, method: 'POST'})
+        .then(resp => {
+          commit('GET_FRIENDS_SUCCESS', resp.data);
+          resolve(resp);
+        })
+        .catch(err => {
+          commit('GET_FRIENDS_ERROR');
           reject(err);
         })
       })

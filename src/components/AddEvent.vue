@@ -27,19 +27,20 @@
 </template>
 
 <script>
-import friends from "@/data/friends.json"
+// import friends from "@/data/friends.json"
 export default{
     Name: "AddEvent",
     data(){
         return{
             title: "",
+            description: "",
             showStartDatePicker: false,
-            jsonFriendOptions: friends,
+            // jsonFriendOptions: friends,
             friendOptions: [],
             currentFriend: "",
             friendList: [],
-            date: "",
-            time: "",
+            startDate: "",
+            startTime: "",
             showStartTimePicker: false
         };
     },
@@ -72,11 +73,12 @@ export default{
             // }
         }
     },
-    mounted(){
-        this.jsonFriendOptions.forEach(friend => {
-            let newFriend = friend.firstName + " " + friend.lastName;
+    async beforeMount(){
+        await this.$store.dispatch('GET_FRIENDS');
+        this.$store.getters.friends.forEach(friend => {
+            let newFriend = friend.first_name + " " + friend.last_name;
             this.friendOptions.push(newFriend);
         });
-    }
+    },
 }
 </script>
