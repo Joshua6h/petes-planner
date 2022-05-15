@@ -1,6 +1,5 @@
 <template>
     <span class="ma-1">
-        <div>{{events}}</div>
         <v-btn @click="setMonthlyView" class="ma-1">Monthly View</v-btn>
         <v-spacer></v-spacer>
         <v-btn @click="setWeeklyView" class="ma-1">Weekly View</v-btn>

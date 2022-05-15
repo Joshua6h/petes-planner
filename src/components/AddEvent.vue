@@ -2,14 +2,15 @@
 <span>
     <h1>Add Event</h1>
     <v-form>
-        <v-text-field label="Event Title"></v-text-field>
-        <v-btn @click="toggleDatePicker">Select Date</v-btn>
-        <v-btn @click="toggleTimePicker">Select Time</v-btn>
-        <v-date-picker v-if="showDatePicker" @change="handleDateSelected" label="Date" v-model="date"></v-date-picker>
-        <h3 v-if="date">Date: {{date}}</h3>
-        <v-time-picker v-if="showTimePicker" v-model="time"></v-time-picker>
-        <v-btn v-if="showTimePicker" @click="toggleTimePicker">Done</v-btn>
-        <h3 v-if="time">Time: {{time}}</h3>
+        <v-text-field v-model="title" label="Event Title"></v-text-field>
+        <v-text-field v-model="description" label="Event Description"></v-text-field>
+        <v-btn @click="toggleStartDatePicker">Select Date</v-btn>
+        <v-btn @click="toggleStartTimePicker">Select Time</v-btn>
+        <v-date-picker v-if="showStartDatePicker" @change="handleStartDateSelected" label="Start Date" v-model="startDate"></v-date-picker>
+        <h3 v-if="startDate">Start Date: {{startDate}}</h3>
+        <v-time-picker v-if="showStartTimePicker" v-model="startTime"></v-time-picker>
+        <v-btn v-if="showStartTimePicker" @click="toggleStartTimePicker">Done</v-btn>
+        <h3 v-if="startTime">Start Time: {{startTime}}</h3>
         <v-select :items="friendOptions" label="Add a friend" v-model="currentFriend"></v-select>
         <v-btn @click="addFriend">Add Friend</v-btn>
         <div>
@@ -31,19 +32,20 @@ export default{
     Name: "AddEvent",
     data(){
         return{
-            showDatePicker: false,
+            title: "",
+            showStartDatePicker: false,
             jsonFriendOptions: friends,
             friendOptions: [],
             currentFriend: "",
             friendList: [],
             date: "",
             time: "",
-            showTimePicker: false
+            showStartTimePicker: false
         };
     },
     methods: {
-        toggleDatePicker(){
-            this.showDatePicker = !this.showDatePicker;
+        toggleStartDatePicker(){
+            this.showStartDatePicker = !this.showStartDatePicker;
         },
         
         addFriend(){
@@ -53,16 +55,21 @@ export default{
             this.currentFriend = "";
         },
 
-        handleDateSelected(){
-            this.toggleDatePicker();
+        handleStartDateSelected(){
+            this.toggleStartDatePicker();
         },
 
-        toggleTimePicker(){
-            this.showTimePicker = !this.showTimePicker;
+        toggleStartTimePicker(){
+            this.showStartTimePicker = !this.showStartTimePicker;
         },
 
         saveEvent(){
             alert("Save Event")
+            // let event = {
+            //     title: this.title,
+            //     description: this.description,
+            //     start_datetime: this.date + ' ' + this.time
+            // }
         }
     },
     mounted(){

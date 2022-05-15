@@ -13,7 +13,8 @@ export default new Vuex.Store({
     profile: {},
     profileStatus: '',
     events: [],
-    eventsStatus: ''
+    eventsStatus: '',
+    addEventsStatus: ''
   },
   getters: {
     isAuthenticated: state => !!state.token,
@@ -62,11 +63,19 @@ export default new Vuex.Store({
     GET_EVENTS_SUCCESS: (state, events) => {
       state.eventsStatus = 'success'
       state.events = events
-      console.log(events)
     },
     GET_EVENTS_ERROR: (state) => {
       state.status = 'error'
       state.profile = {}
+    },
+    ADD_EVENTS_REQUEST: (state) => {
+      state.addEventsStatus = 'loading'
+    },
+    ADD_EVENTS_SUCCESS: (state) => {
+      state.addEventsStatus = 'success'
+    },
+    ADD_EVENTS_FAILURE: (state) => {
+      state.addEventsStatus = 'failure'
     }
   },
   actions: {
@@ -162,6 +171,22 @@ export default new Vuex.Store({
         })
         .catch(err => {
           commit('GET_EVENTS_ERROR');
+          reject(err);
+        })
+      })
+    },
+    ADD_EVENTS: ({commit, event}) => {
+      return new Promise((resolve, reject) => {
+        commit('ADD_EVENTS_REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/getevents', data: event, method: 'POST'})
+        .then(resp => {
+          commit('ADD_EVENTS_SUCCESS', resp.data);
+          resolve(resp);
+          this.$store.dispatch('GET_EVENTS');
+        })
+        .catch(err => {
+          commit('ADD_EVENTS_ERROR');
           reject(err);
         })
       })

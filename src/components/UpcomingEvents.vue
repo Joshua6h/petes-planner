@@ -32,10 +32,17 @@ export default{
             let eventsList = this.$store.getters.events
             const newEvents = []
             eventsList.forEach(event => {
-                let newEvent = event;
-                let temp = new Date(event.start_datetime);
-                newEvent.start_datetime = (temp.getMonth() + 1).toString() + '/' + (temp.getDate()).toString()
-                newEvent.start_datetime = newEvent.start_datetime + ' ' + temp.getHours().toString() + ':' + temp.getMinutes().toString();
+                let newEvent = {
+                    id: event.event_id,
+                    name: event.title,
+                    description: event.description,
+                    participants: event.friends,
+                    start: new Date(event.start_datetime),
+                    end: new Date(event.end_datetime)
+                };
+                // let temp = new Date(event.start_datetime);
+                // newEvent.start_datetime = (temp.getMonth() + 1).toString() + '/' + (temp.getDate()).toString()
+                // newEvent.start_datetime = newEvent.start_datetime + ' ' + temp.getHours().toString() + ':' + temp.getMinutes().toString();
                 newEvents.push(newEvent)
             });
             return eventsList
