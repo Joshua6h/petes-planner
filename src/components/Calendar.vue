@@ -1,15 +1,17 @@
 <template>
-    <v-sheet height="600" class="ma-1">
-        <v-btn @click="setMonthlyView" class="ma-1">Monthly View</v-btn>
-        <v-spacer></v-spacer>
-        <v-btn @click="setWeeklyView" class="ma-1">Weekly View</v-btn>
-        <v-spacer></v-spacer>
-        <v-btn @click="setDailyView" class="ma-1">Daily View</v-btn>
-        <v-spacer></v-spacer>
-        <v-btn @click="prev()" icon><v-icon>mdi-chevron-left</v-icon></v-btn>
-        <v-btn @click="next()" icon><v-icon>mdi-chevron-right</v-icon></v-btn>
-        <v-calendar :type="type" :events="events" :start="start" ref="calendar"></v-calendar>
-    </v-sheet>
+    
+    <div>
+        <h1>Calendar</h1>
+        <v-sheet height="500" max-width="1000" class="ma-auto">
+            <v-row>
+                <v-col><v-btn @click="prev()" icon><v-icon>mdi-chevron-left</v-icon></v-btn></v-col>
+                <v-col><v-select :items="['Monthly View', 'Weekly View', 'Daily View']" label="Select View" v-model="view" @change="handleViewChange"></v-select></v-col>
+                <v-col><v-btn @click="next()" icon><v-icon>mdi-chevron-right</v-icon></v-btn></v-col>
+            </v-row>
+            <v-calendar :type="type" :events="events" :start="start" ref="calendar" outlined></v-calendar>
+        </v-sheet>
+    </div>
+    
 </template>
 
 <script>
@@ -22,6 +24,7 @@ export default{
             type: "month",
             // events: events,
             start: new Date(Date.now()),
+            view: 'Monthly View'
         }
     },
     methods: {
@@ -67,6 +70,17 @@ export default{
                 let myDate = new Date(year, month, day + 1);
                 this.start = myDate;
             }
+        },
+        handleViewChange(){
+            if (this.view === "Monthly View"){
+                this.setMonthlyView();
+            }
+            if (this.view === "Weekly View"){
+                this.setWeeklyView();
+            }
+            if (this.view === "Daily View"){
+                this.setDailyView();
+            }
         }
     },
     async beforeMount(){
@@ -84,6 +98,7 @@ export default{
                     participants: event.friends,
                     start: new Date(event.start_datetime),
                     end: new Date(event.end_datetime),
+                    timed: true
                 };
                 formattedEvents.push(formattedEvent);
              });
