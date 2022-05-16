@@ -1,6 +1,5 @@
 <template>
 <span>
-    <h1>Choose View Section</h1>
     <calendar></calendar>
 </span>
 </template>
