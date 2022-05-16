@@ -4,15 +4,15 @@
         "name": "Event 1",
         "description": "This is the first event",
         "participants": ["Josh", "Pete"],
-        "start": "2022-4-16",
-        "end": "2022-4-16"
+        "start": "2022-5-16",
+        "end": "2022-5-16"
     },
     {
         "id": "1",
         "name": "Event 2",
         "description": "This is the second event",
         "participants": ["Josh", "Scooter"],
-        "start": "2022-3-25",
-        "end": "2022-3-26"
+        "start": "2022-5-25",
+        "end": "2022-5-26"
     }
 ]

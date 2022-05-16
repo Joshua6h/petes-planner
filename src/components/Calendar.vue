@@ -1,5 +1,5 @@
 <template>
-    <span class="ma-1">
+    <v-sheet height="600" class="ma-1">
         <v-btn @click="setMonthlyView" class="ma-1">Monthly View</v-btn>
         <v-spacer></v-spacer>
         <v-btn @click="setWeeklyView" class="ma-1">Weekly View</v-btn>
@@ -9,20 +9,19 @@
         <v-btn @click="prev()" icon><v-icon>mdi-chevron-left</v-icon></v-btn>
         <v-btn @click="next()" icon><v-icon>mdi-chevron-right</v-icon></v-btn>
         <v-calendar :type="type" :events="events" :start="start" ref="calendar"></v-calendar>
-    </span>
+    </v-sheet>
 </template>
 
 <script>
-import events from "@/data/events.json"
+
+// import events from "@/data/events.json"
 export default{
     name: "Calendar",
     data(){
         return {
             type: "month",
-            events: events,
+            // events: events,
             start: new Date(Date.now()),
-            // validMonths: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-            // startDate: Date.now()
         }
     },
     methods: {
@@ -69,6 +68,27 @@ export default{
                 this.start = myDate;
             }
         }
-    }
+    },
+    async beforeMount(){
+        await this.$store.dispatch('GET_EVENTS');
+    },
+    computed: {
+        events(){
+            let eventsList = this.$store.getters.events
+            const formattedEvents = []
+            eventsList.forEach(event => {
+                let formattedEvent = {
+                    id: event.event_id,
+                    name: event.title,
+                    description: event.description,
+                    participants: event.friends,
+                    start: new Date(event.start_datetime),
+                    end: new Date(event.end_datetime),
+                };
+                formattedEvents.push(formattedEvent);
+             });
+            return formattedEvents;
+        },
+    },
 }
 </script>

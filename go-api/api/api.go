@@ -19,8 +19,8 @@ var db *sql.DB
 
 //var server = "DESKTOP-0C0FDTP" // Josh
 var server = "localhost" // Peter
-// var port = 1433          // Josh
-var port = 49678 // Peter
+var port = 1433          // Josh
+// var port = 49678 // Peter
 var user = "apiuser"
 var password = "Api2022!"
 var database = "petes_planner"
@@ -206,9 +206,8 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No login found", http.StatusUnauthorized)
 		return
 	}
-	// print(uid)
 	defer rows.Close()
-	tsql = fmt.Sprintf("SELECT events.description, events.title, events.start_datetime, events.end_datetime FROM user_events INNER JOIN events ON user_events.event_id = events.event_id WHERE user_events.user_id=%d", uid)
+	tsql = fmt.Sprintf("SELECT events.event_id, events.title, events.description, events.start_datetime, events.end_datetime FROM user_events INNER JOIN events ON user_events.event_id = events.event_id WHERE user_events.user_id=%d", uid)
 	rows, err = db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -219,8 +218,25 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	var event_list []model.Event
 	for rows.Next() {
 		var event model.Event
-		rows.Scan(&event.Title, &event.Description, &event.StartDateTime, &event.EndDateTime)
+		rows.Scan(&event.EventID, &event.Title, &event.Description, &event.StartDateTime, &event.EndDateTime)
 		event_list = append(event_list, event)
+	}
+
+	for event := range event_list {
+		tsql = fmt.Sprintf("SELECT users.first_name, users.last_name FROM user_events INNER JOIN users ON user_events.user_id = users.user_id where user_events.event_id = %d", event_list[event].EventID)
+		rows, err = db.QueryContext(ctx, tsql)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var first_name string
+			var last_name string
+			rows.Scan(&first_name, &last_name)
+			name := first_name + " " + last_name
+			event_list[event].Friends = append(event_list[event].Friends, name)
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -376,14 +392,14 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var e model.NewEventRequest
+	var e model.Event
 	err = json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	tsql = fmt.Sprintf("INSERT INTO events (title, description, start_datetime, end_datetime) VALUES ('%s', '%s', '%s', '%s')", e.NewEvent.Title, e.NewEvent.Description, e.NewEvent.StartDateTime, e.NewEvent.EndDateTime)
+	e.Friends = append(e.Friends, fmt.Sprintf("%d", uid))
+	tsql = fmt.Sprintf("INSERT INTO events (title, description, start_datetime, end_datetime) VALUES ('%s', '%s', '%s', '%s')", e.Title, e.Description, e.StartDateTime, e.EndDateTime)
 	_, err = db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -397,11 +413,12 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	for _, v := range e.Users {
-		tsql = fmt.Sprintf("INSERT INTO user_events VALUES ('%d', '%d')", v, eid)
+	for _, v := range e.Friends {
+		tsql = fmt.Sprintf("INSERT INTO user_events VALUES (%s, %d)", v, eid)
 		rows, err = db.QueryContext(ctx, tsql)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			print(7)
 			return
 		}
 	}
@@ -414,6 +431,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		print(8)
 		return
 	}
 }
@@ -425,16 +443,29 @@ func GetFriends(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	var u model.User
-	err = json.NewDecoder(r.Body).Decode(&u)
+	ug := r.Header.Get("Authorization")
+	tsql := fmt.Sprintf("SELECT UserId FROM Sessions where UserGuid='%s' AND IsActive=1;", ug)
+	rows, err := db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	row := db.QueryRowContext(ctx, tsql)
+	var uid int
+	if err = row.Scan(&uid); err != nil {
+		http.Error(w, "No login found", http.StatusUnauthorized)
+		return
+	}
+	defer rows.Close()
 
-	tsql := fmt.Sprintf("SELECT users.user_id, users.first_name, users.last_name, users.username FROM users INNER JOIN friends ON users.user_id = friends.friends_with_id WHERE friends.user_id = %d", u.UserID)
-	rows, err := db.QueryContext(ctx, tsql)
+	// var u model.User
+	// err = json.NewDecoder(r.Body).Decode(&u)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	tsql = fmt.Sprintf("SELECT users.user_id, users.first_name, users.last_name, users.username FROM users INNER JOIN friends ON users.user_id = friends.friends_with_id WHERE friends.user_id = %d", uid)
+	rows, err = db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
