@@ -2,7 +2,8 @@
     <span>
         <v-form v-if='!created' @submit.prevent="signUp">
             <v-text-field label="Username" autofocus outlined v-model="user.username"
-                    :color="this.$store.state.accent" background-color="white"></v-text-field>
+                    :color="this.$store.state.accent" background-color="white"
+                    counter="25"></v-text-field>
             <v-text-field label="First Name" outlined v-model="user.firstname"
                     :color="this.$store.state.accent" background-color="white"></v-text-field>
             <v-text-field label="Last Name" outlined v-model="user.lastname"

@@ -54,7 +54,10 @@ export default {
     methods: {
         addFriend() {
             if (this.friend != '' && this.friend != this.$store.getters.username) {
-                this.$store.dispatch('ADD_FRIEND', {username: this.friend});
+                this.$store.dispatch('ADD_FRIEND', {username: this.friend})
+                .then(() => {
+                    this.friend = '';
+                })
             }
         },
         remove() {

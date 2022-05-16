@@ -109,7 +109,7 @@ export default new Vuex.Store({
     REMOVE_FRIEND_SUCCESS: (state) => {
       state.removeFriendStatus = 'success'
     },
-    REMOVE_FRIEND_FAILURE: (state) => {
+    REMOVE_FRIEND_ERROR: (state) => {
       state.removeFriendStatus = 'error'
     }
   },
