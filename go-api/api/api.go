@@ -41,6 +41,7 @@ func main() {
 	router.HandleFunc("/addevent", mwCheck(AddEvent)).Methods(http.MethodPost)
 	router.HandleFunc("/getfriends", mwCheck(GetFriends)).Methods(http.MethodPost)
 	router.HandleFunc("/addfriend", mwCheck(AddFriend)).Methods(http.MethodPost)
+	router.HandleFunc("/removefriend", mwCheck(RemoveFriend)).Methods(http.MethodPost)
 	router.HandleFunc("/login", Login).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/logout", mwCheck(Logout)).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/getprofile", mwCheck(GetProfile)).Methods(http.MethodPost, http.MethodOptions)
@@ -532,6 +533,60 @@ func AddFriend(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	resp := model.JsonGenericResponse{Type: "Success", Message: "Added friend"}
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func RemoveFriend(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	err := db.PingContext(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ug := r.Header.Get("Authorization")
+	tsql := fmt.Sprintf("SELECT UserId FROM Sessions WHERE UserGuid='%s' AND IsActive=1;", ug)
+	row := db.QueryRowContext(ctx, tsql)
+	var uid int
+	if err = row.Scan(&uid); err != nil {
+		http.Error(w, "User not authenticated", http.StatusUnauthorized)
+		return
+	}
+
+	var friend model.JsonFriendRequest
+	err = json.NewDecoder(r.Body).Decode(&friend)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	tsql = fmt.Sprintf("SELECT user_id FROM users WHERE username='%s';", friend.Username)
+	row = db.QueryRowContext(ctx, tsql)
+	var friend_id int
+	if err = row.Scan(&friend_id); err != nil {
+		http.Error(w, "Cannot find friend", http.StatusInternalServerError)
+		return
+	}
+
+	tsql = fmt.Sprintf("DELETE FROM friends WHERE (user_id=%d AND friends_with_id=%d) OR (user_id=%d AND friends_with_id=%d);", uid, friend_id, friend_id, uid)
+	res, err := db.ExecContext(ctx, tsql)
+	if err != nil {
+		http.Error(w, "Cannot remove friend", http.StatusInternalServerError)
+		return
+	}
+	count, err := res.RowsAffected()
+	if err != nil || count != 1 {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := model.JsonGenericResponse{Type: "Success", Message: "Removed friend"}
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
