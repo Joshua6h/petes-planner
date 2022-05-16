@@ -88,22 +88,26 @@ export default{
     },
     computed: {
         events(){
-            let eventsList = this.$store.getters.events
-            const formattedEvents = []
-            eventsList.forEach(event => {
-                let formattedEvent = {
-                    id: event.event_id,
-                    name: event.title,
-                    description: event.description,
-                    participants: event.friends,
-                    start: new Date(event.start_datetime),
-                    end: new Date(event.end_datetime),
-                    timed: true
-                };
-                formattedEvents.push(formattedEvent);
-             });
-            return formattedEvents;
-        },
+            if (this.$store.getters.getEventsStatus === 'success') {
+                let eventsList = this.$store.getters.events
+                const formattedEvents = []
+                eventsList.forEach(event => {
+                    let formattedEvent = {
+                        id: event.event_id,
+                        name: event.title,
+                        description: event.description,
+                        participants: event.friends,
+                        start: new Date(event.start_datetime),
+                        end: new Date(event.end_datetime),
+                        timed: true
+                    };
+                    formattedEvents.push(formattedEvent);
+                });
+                return formattedEvents;
+            } else {
+                return [];
+            }
+        }
     },
 }
 </script>

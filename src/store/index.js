@@ -16,13 +16,15 @@ export default new Vuex.Store({
     eventsStatus: '',
     addEventsStatus: '',
     friends: [],
-    getFriendsStatus: ''
+    getFriendsStatus: '',
+    addFriendStatus: ''
   },
   getters: {
     isAuthenticated: state => !!state.token,
     authStatus: state => state.status,
     hasProfile: state => state.profileStatus == 'success',
     getEventsStatus: state => state.eventsStatus,
+    getFriendsStatus: state => state.getFriendsStatus,
     username: state => state.profile['username'],
     firstname: state => state.profile['firstname'],
     lastname: state => state.profile['lastname'],
@@ -89,7 +91,16 @@ export default new Vuex.Store({
       state.friends = friends
     },
     GET_FRIENDS_FAILURE: (state) => {
-      state.getFriendsStatus = 'success'
+      state.getFriendsStatus = 'error'
+    },
+    ADD_FRIEND_REQUEST: (state) => {
+      state.addFriendStatus = 'loading'
+    },
+    ADD_FRIEND_SUCCESS: (state) => {
+      state.addFriendStatus = 'success'
+    },
+    ADD_FRIEND_FAILURE: (state) => {
+      state.addFriendStatus = 'error'
     }
   },
   actions: {
@@ -222,6 +233,21 @@ export default new Vuex.Store({
         })
       })
     },
+    ADD_FRIEND: ({commit}, friend) => {
+      return new Promise((resolve, reject) => {
+        commit('ADD_FRIEND_REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/addfriend', data: friend, method: 'POST'})
+        .then(resp => {
+          commit('ADD_FRIEND_SUCCESS');
+          resolve(resp);
+        })
+        .catch(err => {
+          commit('ADD_FRIEND_ERROR');
+          reject(err);
+        })
+      })
+    }
   },
   
   modules: {

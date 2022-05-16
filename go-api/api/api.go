@@ -19,8 +19,8 @@ var db *sql.DB
 
 //var server = "DESKTOP-0C0FDTP" // Josh
 var server = "localhost" // Peter
-var port = 1433          // Josh
-// var port = 49678 // Peter
+// var port = 1433          // Josh
+var port = 49678 // Peter
 var user = "apiuser"
 var password = "Api2022!"
 var database = "petes_planner"
@@ -499,12 +499,7 @@ func AddFriend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ug := r.Header.Get("Authorization")
-	tsql := fmt.Sprintf("SELECT UserId FROM Sessions where UserGuid='%s' AND IsActive=1;", ug)
-	_, err = db.QueryContext(ctx, tsql)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	tsql := fmt.Sprintf("SELECT UserId FROM Sessions WHERE UserGuid='%s' AND IsActive=1;", ug)
 	row := db.QueryRowContext(ctx, tsql)
 	var uid int
 	if err = row.Scan(&uid); err != nil {
@@ -512,10 +507,18 @@ func AddFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var friend_id int
-	err = json.NewDecoder(r.Body).Decode(&friend_id)
+	var friend model.JsonFriendRequest
+	err = json.NewDecoder(r.Body).Decode(&friend)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	tsql = fmt.Sprintf("SELECT user_id FROM users WHERE username='%s';", friend.Username)
+	row = db.QueryRowContext(ctx, tsql)
+	var friend_id int
+	if err = row.Scan(&friend_id); err != nil {
+		http.Error(w, "Cannot find friend", http.StatusInternalServerError)
 		return
 	}
 
@@ -528,7 +531,7 @@ func AddFriend(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	resp := model.JsonGenericResponse{Type: "Success", Message: ""}
+	resp := model.JsonGenericResponse{Type: "Success", Message: "Added friend"}
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

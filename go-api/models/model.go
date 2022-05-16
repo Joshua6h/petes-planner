@@ -64,6 +64,10 @@ type JsonEmailRequest struct {
 	Email string `json:"email"`
 }
 
+type JsonFriendRequest struct {
+	Username string `json:"username"`
+}
+
 type Profile struct {
 	Username  string `json:"username"`
 	FirstName string `json:"firstname"`
