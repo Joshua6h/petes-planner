@@ -392,14 +392,14 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var e model.NewEventRequest
+	var e model.Event
 	err = json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	tsql = fmt.Sprintf("INSERT INTO events (title, description, start_datetime, end_datetime) VALUES ('%s', '%s', '%s', '%s')", e.NewEvent.Title, e.NewEvent.Description, e.NewEvent.StartDateTime, e.NewEvent.EndDateTime)
+	e.Friends = append(e.Friends, fmt.Sprintf("%d", uid))
+	tsql = fmt.Sprintf("INSERT INTO events (title, description, start_datetime, end_datetime) VALUES ('%s', '%s', '%s', '%s')", e.Title, e.Description, e.StartDateTime, e.EndDateTime)
 	_, err = db.QueryContext(ctx, tsql)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -413,11 +413,12 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	for _, v := range e.Users {
-		tsql = fmt.Sprintf("INSERT INTO user_events VALUES ('%d', '%d')", v, eid)
+	for _, v := range e.Friends {
+		tsql = fmt.Sprintf("INSERT INTO user_events VALUES (%s, %d)", v, eid)
 		rows, err = db.QueryContext(ctx, tsql)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			print(7)
 			return
 		}
 	}
@@ -430,6 +431,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		print(8)
 		return
 	}
 }

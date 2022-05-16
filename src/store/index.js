@@ -77,8 +77,8 @@ export default new Vuex.Store({
     ADD_EVENTS_SUCCESS: (state) => {
       state.addEventsStatus = 'success'
     },
-    ADD_EVENTS_FAILURE: (state) => {
-      state.addEventsStatus = 'failure'
+    ADD_EVENTS_ERROR: (state) => {
+      state.addEventsStatus = 'error'
     },
     GET_FRIENDS_REQUEST: (state) => {
       state.getFriendsStatus = 'loading'
@@ -188,11 +188,13 @@ export default new Vuex.Store({
         })
       })
     },
-    ADD_EVENTS: ({commit, event}) => {
+    ADD_EVENT: ({commit}, event) => {
       return new Promise((resolve, reject) => {
         commit('ADD_EVENTS_REQUEST');
+        console.log(event)
         axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
-        axios({url: 'http://localhost:8080/getevents', data: event, method: 'POST'})
+        console.log(localStorage.getItem('user-token'))
+        axios({url: 'http://localhost:8080/addevent', data: event, method: 'POST'})
         .then(resp => {
           commit('ADD_EVENTS_SUCCESS');
           resolve(resp);

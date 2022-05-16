@@ -1,21 +1,19 @@
 <template>
     <span>
-        <h1>Welcome, Name</h1>
+        <h1 class="mt-4">Welcome, {{name}}</h1>
         <v-row class="ma-1 d-flex">
-            <v-col>
+            <v-col class="ma-3">
                 
-                <add-event></add-event>
-                <router-link to="/add-events">Go to add event</router-link>
-                <upcoming-events></upcoming-events>
+                <add-event class="ma-4"></add-event>
+                <router-link to="/add-events" class="ma-4">Go to add event</router-link>
+                <upcoming-events class="ma-4"></upcoming-events>
             </v-col>
-            <v-col>
-                <choose-view></choose-view>
+            <v-col class="ma-3">
+                <v-sheet height="600">
+                    <choose-view></choose-view>
+                </v-sheet> 
                 <router-link to="/calendar">Go to calendar</router-link>
             </v-col>
-            <!-- <v-col>
-                <add-event></add-event>
-                <router-link to="/add-events">Go to add event</router-link>
-            </v-col>     -->
         </v-row>
     </span>
 </template>
@@ -27,9 +25,10 @@ import UpcomingEvents from './UpcomingEvents.vue';
 export default{
   components: { UpcomingEvents, ChooseView, AddEvent },
     name: "Dashboard",
-    async mounted(){
-        // await this.$store.dispatch('GET_EVENTS');
-        // console.log(this.$store.getters.events)
+    data() {
+        return{
+            name: this.$store.getters.firstname
+        }
     }
 };
 </script>

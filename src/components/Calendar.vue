@@ -1,5 +1,5 @@
 <template>
-    <span class="ma-1">
+    <v-sheet height="600" class="ma-1">
         <v-btn @click="setMonthlyView" class="ma-1">Monthly View</v-btn>
         <v-spacer></v-spacer>
         <v-btn @click="setWeeklyView" class="ma-1">Weekly View</v-btn>
@@ -9,7 +9,7 @@
         <v-btn @click="prev()" icon><v-icon>mdi-chevron-left</v-icon></v-btn>
         <v-btn @click="next()" icon><v-icon>mdi-chevron-right</v-icon></v-btn>
         <v-calendar :type="type" :events="events" :start="start" ref="calendar"></v-calendar>
-    </span>
+    </v-sheet>
 </template>
 
 <script>
@@ -79,6 +79,7 @@ export default{
             eventsList.forEach(event => {
                 let formattedEvent = {
                     id: event.event_id,
+                    name: event.title,
                     description: event.description,
                     participants: event.friends,
                     start: new Date(event.start_datetime),
