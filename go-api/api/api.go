@@ -19,8 +19,8 @@ var db *sql.DB
 
 //var server = "DESKTOP-0C0FDTP" // Josh
 var server = "localhost" // Peter
-// var port = 1433          // Josh
-var port = 49678 // Peter
+var port = 1433          // Josh
+// var port = 49678 // Peter
 var user = "apiuser"
 var password = "Api2022!"
 var database = "petes_planner"
