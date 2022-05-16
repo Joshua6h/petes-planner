@@ -35,7 +35,7 @@ export default {
             
             const info = {username: this.username, password: this.password};
             this.$store.dispatch('AUTH_REQUEST', info).then(() => {
-                this.$router.push('/');
+                this.$router.push('/dashboard');
             }).catch((err) => {
                 if (err.response) {
                     // Request made and server responded
