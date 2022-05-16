@@ -22,12 +22,22 @@
                         <td>{{user.username}}</td>
                         <td>{{user.last_name}}, {{user.first_name}}</td>
                         <td class="text-right">
-                            <v-btn><v-icon color="error">mdi-trash-can-outline</v-icon></v-btn>
+                            <v-btn @click="dialog=true; selectedFriend=user.username"><v-icon color="error">mdi-trash-can-outline</v-icon></v-btn>
                         </td>
                     </tr>
                 </tbody>
             </v-simple-table>
         </v-container>
+        <v-row justify="center">
+            <v-dialog v-model="dialog" transition="dialog-bottom-transition" max-width="25vw">
+                <v-card dark class="pb-5">
+                    <v-card-title class="red--text">Are you sure?</v-card-title>
+                    <v-card-text>Are you sure you want to remove this friend?</v-card-text>
+                    <v-btn @click="dialog=false" class="mr-2">Cancel</v-btn>
+                    <v-btn @click="remove()" color="error" class="ml-2">Remove</v-btn>
+                </v-card>
+            </v-dialog>
+        </v-row>
     </v-sheet>
 </template>
 
@@ -36,14 +46,20 @@ export default {
     name: 'FriendCard',
     data() {
         return {
-            friend: ''
+            friend: '',
+            selectedFriend: '',
+            dialog: false
         }
     },
     methods: {
         addFriend() {
-            if (this.friend != '') {
+            if (this.friend != '' && this.friend != this.$store.getters.username) {
                 this.$store.dispatch('ADD_FRIEND', {username: this.friend});
             }
+        },
+        remove() {
+            this.dialog = false;
+            this.$store.dispatch('REMOVE_FRIEND', {username: this.selectedFriend});
         }
     },
     computed: {

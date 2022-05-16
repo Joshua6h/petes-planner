@@ -24,9 +24,6 @@ export default {
                     text: 'FRIENDS'
                 },
                 {
-                    text: 'EVENTS'
-                },
-                {
                     text: 'LOGOUT'
                 }
             ]

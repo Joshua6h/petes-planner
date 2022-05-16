@@ -25,6 +25,7 @@ export default new Vuex.Store({
     hasProfile: state => state.profileStatus == 'success',
     getEventsStatus: state => state.eventsStatus,
     getFriendsStatus: state => state.getFriendsStatus,
+    removedFriend: state => state.removeFriendStatus == 'success',
     username: state => state.profile['username'],
     firstname: state => state.profile['firstname'],
     lastname: state => state.profile['lastname'],
@@ -101,6 +102,15 @@ export default new Vuex.Store({
     },
     ADD_FRIEND_FAILURE: (state) => {
       state.addFriendStatus = 'error'
+    },
+    REMOVE_FRIEND_REQUEST: (state) => {
+      state.removeFriendStatus = 'loading'
+    },
+    REMOVE_FRIEND_SUCCESS: (state) => {
+      state.removeFriendStatus = 'success'
+    },
+    REMOVE_FRIEND_FAILURE: (state) => {
+      state.removeFriendStatus = 'error'
     }
   },
   actions: {
@@ -244,6 +254,21 @@ export default new Vuex.Store({
         })
         .catch(err => {
           commit('ADD_FRIEND_ERROR');
+          reject(err);
+        })
+      })
+    },
+    REMOVE_FRIEND: ({commit}, friend) => {
+      return new Promise((resolve, reject) => {
+        commit('REMOVE_FRIEND_REQUEST');
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+        axios({url: 'http://localhost:8080/removefriend', data: friend, method: 'POST'})
+        .then(resp => {
+          commit('REMOVE_FRIEND_SUCCESS');
+          resolve(resp);
+        })
+        .catch(err => {
+          commit('REMOVE_FRIEND_ERROR');
           reject(err);
         })
       })
