@@ -23,29 +23,32 @@ export default{
     name: "UpcomingEvents",
     data(){
         return{
-            // events: events
-            // events: this.$store.getters.events
+            eventsLoaded: false
         };
     },
     computed: {
         events(){
-            let eventsList = this.$store.getters.events
-            const newEvents = []
-            eventsList.forEach(event => {
-                let newEvent = {
-                    id: event.event_id,
-                    name: event.title,
-                    description: event.description,
-                    participants: event.friends,
-                    start: new Date(event.start_datetime),
-                    end: new Date(event.end_datetime)
-                };
-                // let temp = new Date(event.start_datetime);
-                // newEvent.start_datetime = (temp.getMonth() + 1).toString() + '/' + (temp.getDate()).toString()
-                // newEvent.start_datetime = newEvent.start_datetime + ' ' + temp.getHours().toString() + ':' + temp.getMinutes().toString();
-                newEvents.push(newEvent)
-            });
-            return eventsList
+            if (this.$store.getters.getEventsStatus === 'success') {
+                let eventsList = this.$store.getters.events;
+                const newEvents = [];
+                eventsList.forEach(event => {
+                    let newEvent = {
+                        id: event.event_id,
+                        name: event.title,
+                        description: event.description,
+                        participants: event.friends,
+                        start: new Date(event.start_datetime),
+                        end: new Date(event.end_datetime)
+                    };
+                    // let temp = new Date(event.start_datetime);
+                    // newEvent.start_datetime = (temp.getMonth() + 1).toString() + '/' + (temp.getDate()).toString()
+                    // newEvent.start_datetime = newEvent.start_datetime + ' ' + temp.getHours().toString() + ':' + temp.getMinutes().toString();
+                    newEvents.push(newEvent);
+                });
+                return eventsList;
+            } else {
+                return [];
+            }
         },
     },
     async beforeMount(){

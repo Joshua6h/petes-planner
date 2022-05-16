@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-sheet elevation="4" rounded="lg" class="mt-7">
         <v-container>
             <h2>{{username}}</h2>
             <h2>{{firstname}} {{lastname}}</h2>
@@ -7,7 +7,7 @@
             <!-- <h3><v-btn icon><v-icon>mdi-border-color</v-icon></v-btn> Edit Information</h3> -->
             <!-- We probably don't want them to be able to change their info at the moment -->
         </v-container>
-    </v-card>
+    </v-sheet>
 </template>
 
 <script>

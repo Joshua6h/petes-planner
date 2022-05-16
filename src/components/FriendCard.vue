@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-sheet class="mt-7" elevation="4" rounded="lg">
         <v-container>
             <h1>Add Friends</h1>
             <div class="ma-auto" style="width: 50%;">
@@ -8,7 +8,7 @@
             </div>
             <v-btn type="submit" :disabled="friend == '' ? true : false">Add</v-btn>
         </v-container>
-    </v-card>
+    </v-sheet>
 </template>
 
 <script>

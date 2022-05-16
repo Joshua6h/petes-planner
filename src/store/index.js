@@ -22,6 +22,7 @@ export default new Vuex.Store({
     isAuthenticated: state => !!state.token,
     authStatus: state => state.status,
     hasProfile: state => state.profileStatus == 'success',
+    getEventsStatus: state => state.eventsStatus,
     username: state => state.profile['username'],
     firstname: state => state.profile['firstname'],
     lastname: state => state.profile['lastname'],
@@ -61,15 +62,15 @@ export default new Vuex.Store({
       state.status = 'error'
     },
     GET_EVENTS_REQUEST: (state) => {
-      state.status = 'loading'
+      state.eventsStatus = 'loading'
     },
     GET_EVENTS_SUCCESS: (state, events) => {
       state.eventsStatus = 'success'
       state.events = events
     },
     GET_EVENTS_ERROR: (state) => {
-      state.status = 'error'
-      state.profile = {}
+      state.eventsStatus = 'error'
+      state.events = []
     },
     ADD_EVENTS_REQUEST: (state) => {
       state.addEventsStatus = 'loading'
